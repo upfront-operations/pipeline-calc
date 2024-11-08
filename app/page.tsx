@@ -51,17 +51,6 @@ const PipelineCalculator = () => {
 
   const [results, setResults] = useState<Results | null>(null);
 
-  type HelperTextKey = keyof typeof pipelineData;
-  const helperText: [HelperTextKey, string][] = [
-    ['leads', "Total number of new leads entering your pipeline each month"],
-    ['meetings', "Number of discovery or sales meetings conducted monthly"],
-    ['proposals', "Number of proposals or quotes sent to prospects monthly"],
-    ['negotiations', "Number of deals in active negotiation/contract review"],
-    ['closed', "Number of deals successfully closed per month"],
-    ['avgDealSize', "Average revenue per closed deal"],
-    ['salesCycle', "Average days from first contact to deal closure"],
-  ];
-
   const helperTextMap: { [key in keyof typeof pipelineData]: string } = {
     leads: "Total number of new leads entering your pipeline each month",
     meetings: "Number of discovery or sales meetings conducted monthly",
