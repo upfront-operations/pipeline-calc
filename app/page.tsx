@@ -23,7 +23,33 @@ const PipelineCalculator = () => {
     salesCycle: ''
   });
 
-  const [results, setResults] = useState(null);
+  interface Results {
+    conversionRates: {
+      leadToMeeting: string;
+      meetingToProposal: string;
+      proposalToNegotiation: string;
+      negotiationToClose: string;
+      overallConversion: string;
+    };
+    potentialRevenue: number;
+    improvedRevenue: number;
+    velocityScore: {
+      score: string;
+      text: string;
+      color: string;
+    };
+    numbers: {
+      leads: number;
+      meetings: number;
+      proposals: number;
+      negotiations: number;
+      closed: number;
+      avgDealSize: number;
+      salesCycle: number;
+    };
+  }
+
+  const [results, setResults] = useState<Results | null>(null);
 
   const helperText = {
     leads: "Total number of new leads entering your pipeline each month",
@@ -72,7 +98,7 @@ const PipelineCalculator = () => {
     };
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const calculatedResults = calculateMetrics();
     setResults(calculatedResults);
