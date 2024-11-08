@@ -62,6 +62,16 @@ const PipelineCalculator = () => {
     ['salesCycle', "Average days from first contact to deal closure"],
   ];
 
+  const helperTextMap: { [key in keyof typeof pipelineData]: string } = {
+    leads: "Total number of new leads entering your pipeline each month",
+    meetings: "Number of discovery or sales meetings conducted monthly",
+    proposals: "Number of proposals or quotes sent to prospects monthly",
+    negotiations: "Number of deals in active negotiation/contract review",
+    closed: "Number of deals successfully closed per month",
+    avgDealSize: "Average revenue per closed deal",
+    salesCycle: "Average days from first contact to deal closure",
+  };
+
   const calculateMetrics = () => {
     const numbers = {
       leads: Number(pipelineData.leads) || 0,
@@ -141,8 +151,18 @@ const PipelineCalculator = () => {
                     value={value}
                     onChange={(e) => setPipelineData({...pipelineData, [key]: e.target.value})}
                   />
-                  {helperText.map(([key, text]) => (
-                    <p key={key} className="text-sm text-gray-500">{text}</p>))}
+                  {Object.entries(pipelineData).map(([key, value]) => (
+                  <div key={key} className="space-y-2">
+                    <Label>{key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}</Label>
+                    <Input
+                      required
+                      type="number"
+                      value={value}
+                      onChange={(e) => setPipelineData({ ...pipelineData, [key]: e.target.value })}
+                    />
+                    <p className="text-sm text-gray-500">{helperTextMap[key as keyof typeof pipelineData]}</p>
+                  </div>
+                ))}
                 </div>
               ))}
             </div>
