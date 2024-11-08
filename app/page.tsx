@@ -51,7 +51,7 @@ const PipelineCalculator = () => {
 
   const [results, setResults] = useState<Results | null>(null);
 
-  const helperText = {
+  const helperText: { [key: string]: string } = {
     leads: "Total number of new leads entering your pipeline each month",
     meetings: "Number of discovery or sales meetings conducted monthly",
     proposals: "Number of proposals or quotes sent to prospects monthly",
