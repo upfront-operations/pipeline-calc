@@ -1,101 +1,238 @@
-import Image from "next/image";
+'use client';
+import React, { useState } from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label'; 
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { Activity, TrendingUp, DollarSign, Mail } from 'lucide-react';
 
-export default function Home() {
+const PipelineCalculator = () => {
+  const [showEmailCapture, setShowEmailCapture] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  const [email, setEmail] = useState('');
+  
+  const [pipelineData, setPipelineData] = useState({
+    leads: '',
+    meetings: '',
+    proposals: '',
+    negotiations: '',
+    closed: '',
+    avgDealSize: '',
+    salesCycle: ''
+  });
+
+  const [results, setResults] = useState(null);
+
+  const helperText = {
+    leads: "Total number of new leads entering your pipeline each month",
+    meetings: "Number of discovery or sales meetings conducted monthly",
+    proposals: "Number of proposals or quotes sent to prospects monthly",
+    negotiations: "Number of deals in active negotiation/contract review",
+    closed: "Number of deals successfully closed per month",
+    avgDealSize: "Average revenue per closed deal",
+    salesCycle: "Average days from first contact to deal closure"
+  };
+
+  const calculateMetrics = () => {
+    const numbers = {
+      leads: Number(pipelineData.leads) || 0,
+      meetings: Number(pipelineData.meetings) || 0,
+      proposals: Number(pipelineData.proposals) || 0,
+      negotiations: Number(pipelineData.negotiations) || 0,
+      closed: Number(pipelineData.closed) || 0,
+      avgDealSize: Number(pipelineData.avgDealSize) || 0,
+      salesCycle: Number(pipelineData.salesCycle) || 0
+    };
+
+    const conversionRates = {
+      leadToMeeting: ((numbers.meetings / numbers.leads) * 100).toFixed(1),
+      meetingToProposal: ((numbers.proposals / numbers.meetings) * 100).toFixed(1),
+      proposalToNegotiation: ((numbers.negotiations / numbers.proposals) * 100).toFixed(1),
+      negotiationToClose: ((numbers.closed / numbers.negotiations) * 100).toFixed(1),
+      overallConversion: ((numbers.closed / numbers.leads) * 100).toFixed(1)
+    };
+
+    const potentialRevenue = numbers.closed * numbers.avgDealSize;
+    const improvedRevenue = potentialRevenue * 1.25;
+
+    let velocityScore;
+    if (numbers.salesCycle <= 30) velocityScore = { score: 'A', text: 'Excellent', color: 'text-green-600' };
+    else if (numbers.salesCycle <= 60) velocityScore = { score: 'B', text: 'Good', color: 'text-blue-600' };
+    else if (numbers.salesCycle <= 90) velocityScore = { score: 'C', text: 'Fair', color: 'text-yellow-600' };
+    else velocityScore = { score: 'D', text: 'Needs Improvement', color: 'text-red-600' };
+
+    return {
+      conversionRates,
+      potentialRevenue,
+      improvedRevenue,
+      velocityScore,
+      numbers
+    };
+  };
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    const calculatedResults = calculateMetrics();
+    setResults(calculatedResults);
+    setShowResults(true);
+  };
+
+  const handleDownload = () => {
+    setShowEmailCapture(true);
+  };
+
+  const getChartData = () => {
+    if (!results) return [];
+    return [
+      { name: 'Lead → Meeting', rate: parseFloat(results.conversionRates.leadToMeeting) },
+      { name: 'Meeting → Proposal', rate: parseFloat(results.conversionRates.meetingToProposal) },
+      { name: 'Proposal → Negotiation', rate: parseFloat(results.conversionRates.proposalToNegotiation) },
+      { name: 'Negotiation → Close', rate: parseFloat(results.conversionRates.negotiationToClose) }
+    ];
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div className="w-full max-w-4xl mx-auto">
+      <Card>
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl">Sales Pipeline Health Calculator</CardTitle>
+          <p className="text-gray-500">Analyze your sales pipeline performance and identify optimization opportunities</p>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleFormSubmit} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {Object.entries(pipelineData).map(([key, value]) => (
+                <div key={key} className="space-y-2">
+                  <Label>
+                    {key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}
+                  </Label>
+                  <Input
+                    required
+                    type="number"
+                    value={value}
+                    onChange={(e) => setPipelineData({...pipelineData, [key]: e.target.value})}
+                  />
+                  <p className="text-sm text-gray-500">{helperText[key]}</p>
+                </div>
+              ))}
+            </div>
+            <Button type="submit" className="w-full mt-6">Calculate Pipeline Health</Button>
+          </form>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our MICHELE docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          {showResults && results && (
+            <div className="space-y-6 mt-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Alert className="bg-blue-50">
+                  <Activity className="h-4 w-4" />
+                  <AlertTitle>Overall Conversion</AlertTitle>
+                  <AlertDescription>
+                    <span className="text-2xl font-bold">{results.conversionRates.overallConversion}%</span>
+                  </AlertDescription>
+                </Alert>
+                
+                <Alert className="bg-blue-50">
+                  <DollarSign className="h-4 w-4" />
+                  <AlertTitle>Monthly Revenue</AlertTitle>
+                  <AlertDescription>
+                    <span className="text-2xl font-bold">${results.potentialRevenue.toLocaleString()}</span>
+                  </AlertDescription>
+                </Alert>
+                
+                <Alert className="bg-blue-50">
+                  <TrendingUp className="h-4 w-4" />
+                  <AlertTitle>Velocity Score</AlertTitle>
+                  <AlertDescription>
+                    <span className={`text-2xl font-bold ${results.velocityScore.color}`}>
+                      {results.velocityScore.score}
+                    </span>
+                    <span className="block text-sm">{results.velocityScore.text}</span>
+                  </AlertDescription>
+                </Alert>
+              </div>
+
+              <div className="mt-8">
+                <h3 className="text-lg font-semibold mb-4">Conversion Rates by Stage</h3>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={getChartData()}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Bar dataKey="rate" fill="#2563eb" name="Conversion Rate %" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              <Alert>
+                <AlertTitle>Key Findings</AlertTitle>
+                <AlertDescription>
+                  <ul className="list-disc pl-4 mt-2 space-y-2">
+                    {parseFloat(results.conversionRates.leadToMeeting) < 40 && (
+                      <li>Your lead-to-meeting conversion rate of {results.conversionRates.leadToMeeting}% is below the industry benchmark of 40%. Consider implementing improved lead qualification processes.</li>
+                    )}
+                    {parseFloat(results.conversionRates.meetingToProposal) < 50 && (
+                      <li>Your meeting-to-proposal rate of {results.conversionRates.meetingToProposal}% suggests opportunity for improved discovery call processes.</li>
+                    )}
+                    {parseFloat(results.conversionRates.proposalToNegotiation) < 60 && (
+                      <li>Proposal-to-negotiation conversion of {results.conversionRates.proposalToNegotiation}% indicates potential for better proposal automation and tracking.</li>
+                    )}
+                    {results.numbers.salesCycle > 60 && (
+                      <li>Your {results.numbers.salesCycle}-day sales cycle is above optimal range. Process automation could help reduce this significantly.</li>
+                    )}
+                  </ul>
+                </AlertDescription>
+              </Alert>
+
+              <Alert className="bg-blue-50">
+                <AlertTitle className="flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4" />
+                  Revenue Opportunity
+                </AlertTitle>
+                <AlertDescription>
+                  <p className="mt-2">
+                    With optimized sales operations, you could potentially increase your monthly revenue to: 
+                    <span className="font-bold text-blue-600 ml-1">
+                      ${results.improvedRevenue.toLocaleString()}
+                    </span>
+                  </p>
+                  <Button onClick={handleDownload} className="mt-4">
+                    Get Detailed Analysis Report
+                  </Button>
+                </AlertDescription>
+              </Alert>
+
+              {showEmailCapture && (
+                <Alert>
+                  <AlertTitle className="flex items-center gap-2">
+                    <Mail className="h-4 w-4" />
+                    Get Your Detailed Report
+                  </AlertTitle>
+                  <AlertDescription>
+                    <div className="mt-2 space-y-2">
+                      <p>Enter your email to receive a comprehensive analysis with actionable recommendations</p>
+                      <div className="flex gap-2">
+                        <Input
+                          type="email"
+                          placeholder="you@company.com"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                        />
+                        <Button>Send Report</Button>
+                      </div>
+                    </div>
+                  </AlertDescription>
+                </Alert>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
-}
+};
+
+export default PipelineCalculator;
