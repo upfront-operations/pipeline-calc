@@ -134,8 +134,8 @@ const PipelineCalculator = () => {
     <div className="w-full max-w-4xl mx-auto">
       <Card>
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl">Sales Pipeline Health Calculator</CardTitle>
-          <p className="text-gray-500">Analyze your sales pipeline performance and identify optimization opportunities</p>
+          <CardTitle className="text-2xl">Upfront Ops Sales Pipeline Health Calculator</CardTitle>
+          <p className="text-gray-500">Use this free calculator to Analyze your sales pipeline performance and identify optimization opportunities. Your results are shown immediately and you have the opportunity to have your results sent to you via email.</p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleFormSubmit} className="space-y-4">
