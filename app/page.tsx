@@ -225,7 +225,6 @@ const PipelineCalculator = () => {
                     <Bar dataKey="rate" fill="#2563eb" name="Conversion Rate %" />
                   </BarChart>
                 </ResponsiveContainer>
-              </div>
             </div>
 
             <Alert>
