@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label'; 
 import { Button } from '@/components/ui/button';
@@ -133,6 +133,9 @@ const PipelineCalculator = () => {
   return (
     <div className="w-full max-w-4xl mx-auto">
       <Card>
+         <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl">Input your sales data below</CardTitle>
+        </CardHeader> 
         <CardContent>
           <form onSubmit={handleFormSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
