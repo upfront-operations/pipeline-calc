@@ -4,6 +4,9 @@ import localFont from "next/font/local";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
+// PASTE WEBFLOW CSS IMPORTS HERE IF ANY
+
+
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
   weight: ['200', '300', '400', '500', '600', '700', '800'],
@@ -35,10 +38,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      {/* PASTE WEBFLOW HEAD CONTENT HERE IF ANY */}
       <body
         className={`${plusJakarta.variable} ${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
       >
-        {children}
+        {/* PASTE WEBFLOW HEADER HTML HERE */}
+        
+        <main>
+          {/* PASTE WEBFLOW MAIN CONTAINER HTML HERE */}
+          {children}
+        </main>
+
+        {/* PASTE WEBFLOW FOOTER HTML HERE */}
         <SpeedInsights />
       </body>
     </html>
