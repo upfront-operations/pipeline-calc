@@ -1,4 +1,5 @@
 'use client';
+
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -8,12 +9,22 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Activity, TrendingUp, DollarSign, Mail } from 'lucide-react';
 
+type PipelineData = {
+  leads: string;
+  meetings: string;
+  proposals: string;
+  negotiations: string;
+  closed: string;
+  avgDealSize: string;
+  salesCycle: string;
+};
+
 const PipelineCalculator = () => {
   const [showEmailCapture, setShowEmailCapture] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [email, setEmail] = useState('');
   
-  const [pipelineData, setPipelineData] = useState({
+  const [pipelineData, setPipelineData] = useState<PipelineData>({
     leads: '',
     meetings: '',
     proposals: '',
@@ -22,6 +33,16 @@ const PipelineCalculator = () => {
     avgDealSize: '',
     salesCycle: ''
   });
+
+  const helperTextMap: Record<keyof PipelineData, string> = {
+    leads: "Total number of new leads entering your pipeline each month",
+    meetings: "Number of discovery or sales meetings conducted monthly",
+    proposals: "Number of proposals or quotes sent to prospects monthly",
+    negotiations: "Number of deals in active negotiation/contract review",
+    closed: "Number of deals successfully closed per month",
+    avgDealSize: "Average revenue per closed deal",
+    salesCycle: "Average days from first contact to deal closure",
+  };
 
   interface Results {
     conversionRates: {
@@ -50,16 +71,6 @@ const PipelineCalculator = () => {
   }
 
   const [results, setResults] = useState<Results | null>(null);
-
-  const helperText = {
-    leads: "Total number of new leads entering your pipeline each month",
-    meetings: "Number of discovery or sales meetings conducted monthly",
-    proposals: "Number of proposals or quotes sent to prospects monthly",
-    negotiations: "Number of deals in active negotiation/contract review",
-    closed: "Number of deals successfully closed per month",
-    avgDealSize: "Average revenue per closed deal",
-    salesCycle: "Average days from first contact to deal closure"
-  };
 
   const calculateMetrics = () => {
     const numbers = {
@@ -129,7 +140,7 @@ const PipelineCalculator = () => {
         <CardContent>
           <form onSubmit={handleFormSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {Object.entries(pipelineData).map(([key, value]) => (
+              {(Object.keys(pipelineData) as Array<keyof PipelineData>).map((key) => (
                 <div key={key} className="space-y-2">
                   <Label>
                     {key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}
@@ -137,10 +148,13 @@ const PipelineCalculator = () => {
                   <Input
                     required
                     type="number"
-                    value={value}
+                    value={pipelineData[key]}
                     onChange={(e) => setPipelineData({...pipelineData, [key]: e.target.value})}
+                    placeholder="Enter number"
                   />
-                  <p className="text-sm text-gray-500">{helperText[key]}</p>
+                  <p className="text-sm text-gray-500">
+                    {helperTextMap[key]}
+                  </p>
                 </div>
               ))}
             </div>
@@ -262,3 +276,4 @@ const PipelineCalculator = () => {
 };
 
 export default PipelineCalculator;
+//hi test comment
