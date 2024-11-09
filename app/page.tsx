@@ -208,13 +208,18 @@ const PipelineCalculator = () => {
               </Alert>
             </div>
 
-            <div className="mt-8">
-              <h3 className="text-lg font-semibold mb-4">Conversion Rates by Stage</h3>
-              <div className="h-64">
+            <div className="h-80 mb-8">  {/* increased height and added bottom margin */}
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={getChartData()}>
+                  <BarChart data={getChartData()} margin={{ bottom: 70, right: 20 }}> {/* added margins */}
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" angle={-45} textAnchor="end" height={80} />
+                    <XAxis 
+                      dataKey="name" 
+                      angle={-45} 
+                      textAnchor="end" 
+                      height={60}  
+                      interval={0}  // ensures all labels are shown
+                      tick={{ fontSize: 12 }} 
+                    />
                     <YAxis />
                     <Tooltip />
                     <Bar dataKey="rate" fill="#2563eb" name="Conversion Rate %" />
