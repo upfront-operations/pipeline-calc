@@ -461,26 +461,40 @@ import { Activity, TrendingUp, DollarSign, Mail } from 'lucide-react';
             salesCycle: Number(pipelineData.salesCycle) || 0
         };
     
+        // Logic check to ensure each stage value is less than or equal to the previous stage
+        if (
+            numbers.leads < numbers.meetings ||
+            numbers.meetings < numbers.proposals ||
+            numbers.proposals < numbers.negotiations ||
+            numbers.negotiations < numbers.closed
+        ) {
+            alert("Invalid input: Each stage value must be less than or equal to the previous stage. Please correct the values.");
+            return null; // Return early to stop calculation if values are incorrect
+        }
+    
+        // Calculate potential deals through the funnel
+        const actualDealsThroughFunnel = Math.min(
+            numbers.leads,
+            numbers.meetings,
+            numbers.proposals,
+            numbers.negotiations,
+            numbers.closed
+        );
+    
+        // Calculate potential revenue based on actual deals that reach the 'closed' stage
+        const potentialRevenue = actualDealsThroughFunnel * numbers.avgDealSize;
+    
+        // Calculate conversion rates with checks to prevent division by zero
         const conversionRates = {
-            leadToMeeting: ((numbers.meetings / numbers.leads) * 100).toFixed(1),
-            meetingToProposal: ((numbers.proposals / numbers.meetings) * 100).toFixed(1),
-            proposalToNegotiation: ((numbers.negotiations / numbers.proposals) * 100).toFixed(1),
-            negotiationToClose: ((numbers.closed / numbers.negotiations) * 100).toFixed(1),
-            overallConversion: ((numbers.closed / numbers.leads) * 100).toFixed(1)
+            leadToMeeting: numbers.leads ? ((numbers.meetings / numbers.leads) * 100).toFixed(1) : "0",
+            meetingToProposal: numbers.meetings ? ((numbers.proposals / numbers.meetings) * 100).toFixed(1) : "0",
+            proposalToNegotiation: numbers.proposals ? ((numbers.negotiations / numbers.proposals) * 100).toFixed(1) : "0",
+            negotiationToClose: numbers.negotiations ? ((numbers.closed / numbers.negotiations) * 100).toFixed(1) : "0",
+            overallConversion: numbers.leads ? ((numbers.closed / numbers.leads) * 100).toFixed(1) : "0"
         };
     
         const config = getCurrentConfig();
         const benchmarks = config.benchmarks;
-    
-        // Calculate potential deals based on benchmark rates
-        const potentialDeals = numbers.leads *
-            (benchmarks.leadToMeeting / 100) *
-            (benchmarks.meetingToProposal / 100) *
-            (benchmarks.proposalToNegotiation / 100) *
-            (benchmarks.negotiationToClose / 100);
-    
-        // Corrected: Use potentialDeals to calculate potentialRevenue
-        const potentialRevenue = potentialDeals * numbers.avgDealSize;
     
         // Calculate improvement potential for each stage
         const improvements = {
@@ -490,7 +504,7 @@ import { Activity, TrendingUp, DollarSign, Mail } from 'lucide-react';
             negotiationToClose: Math.max(0, (benchmarks.negotiationToClose / 100) - (numbers.closed / numbers.negotiations))
         };
     
-        // Corrected: Calculate improved conversion rates
+        // Calculate improved conversion rates with limits to avoid exceeding 100%
         const improvedConversionRates = {
             leadToMeeting: Math.min((numbers.meetings / numbers.leads) + improvements.leadToMeeting, 1),
             meetingToProposal: Math.min((numbers.proposals / numbers.meetings) + improvements.meetingToProposal, 1),
@@ -498,14 +512,14 @@ import { Activity, TrendingUp, DollarSign, Mail } from 'lucide-react';
             negotiationToClose: Math.min((numbers.closed / numbers.negotiations) + improvements.negotiationToClose, 1)
         };
     
-        // Corrected: Calculate improved deals using improved conversion rates
+        // Calculate improved deals based on improved conversion rates
         const improvedDeals = numbers.leads *
             improvedConversionRates.leadToMeeting *
             improvedConversionRates.meetingToProposal *
             improvedConversionRates.proposalToNegotiation *
             improvedConversionRates.negotiationToClose;
     
-        // Corrected: Calculate improved revenue using improved deals
+        // Calculate improved revenue using improved deals
         const improvedRevenue = improvedDeals * numbers.avgDealSize;
     
         // Calculate velocity score
@@ -530,6 +544,8 @@ import { Activity, TrendingUp, DollarSign, Mail } from 'lucide-react';
             numbers
         };
     };
+    
+    
     
   
     const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -638,7 +654,7 @@ import { Activity, TrendingUp, DollarSign, Mail } from 'lucide-react';
                     <AlertTitle>Overall Conversion</AlertTitle>
                     <AlertDescription>
                       <span className="text-2xl font-bold">
-                        {`${results.conversionRates.overallConversion}%`}
+                      {`${Number(results.conversionRates.overallConversion).toPrecision(4)}%`}
                       </span>
                     </AlertDescription>
                   </Alert>
