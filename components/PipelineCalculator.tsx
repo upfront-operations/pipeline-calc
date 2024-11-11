@@ -53,6 +53,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Activity, TrendingUp, DollarSign, Mail } from 'lucide-react';
+import type { FC } from 'react';  // Add this import
 
   const industryConfigs = {
     coffee_shop: {
@@ -334,8 +335,12 @@ import { Activity, TrendingUp, DollarSign, Mail } from 'lucide-react';
     avgDealSize: string;
     salesCycle: string;
   };
+
+  interface PipelineCalculatorProps {
+    initialIndustry: string | null;
+  }
   
-  const PipelineCalculator = () => {
+  const PipelineCalculator: FC<PipelineCalculatorProps> = ({ initialIndustry }) => {
     const [mounted, setMounted] = useState(false);
     // Add useEffect to handle client-side mounting
     const searchParams = useSearchParams();
