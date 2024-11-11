@@ -1,11 +1,22 @@
 import PipelineCalculator from '../components/PipelineCalculator';
+import { Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+
+function Calculator() {
+  const searchParams = useSearchParams();
+  return <PipelineCalculator initialIndustry={searchParams.get('industry')} />;
+}
 
 export default function Home() {
   return (
     <main className="min-h-screen p-4">
-      <div className="w-full max-w-4xl mx-auto">
-        <PipelineCalculator />
-      </div>
+      <Suspense fallback={
+        <div className="min-h-[400px] flex items-center justify-center">
+          <div className="text-lg text-gray-500">Loading calculator...</div>
+        </div>
+      }>
+        <Calculator />
+      </Suspense>
 
       <div className="text-sm text-gray-500 mt-8 p-4 bg-gray-50 rounded-lg max-w-4xl mx-auto">
         <p className="mb-2">
@@ -13,12 +24,12 @@ export default function Home() {
           While we strive for accuracy, results should be used as general guidance rather than definitive metrics.
         </p>
         <p className="mb-2">
-          Want to use this calculator on your own site? We&apos;re happy to share our public repo on github! Just reach out and include a backlink to us. 
-          We believe in helping the whole community grow. 🤝  <a href="https://github.com/upfront-operations/pipeline-calc" className="text-blue-500 hover:text-blue-600">Check out our public repo on GitHub here</a>.
+          Want to use this calculator on your own site? We&apos;re happy to share! Just reach out and include a backlink to us. 
+          We believe in helping the whole community grow. 🤝
         </p>
         <p>
           <span className="text-gray-400">Unauthorized use, reproduction, or distribution is prohibited. But seriously, just ask - we&apos;re friendly! Contact us at </span>
-          <a href="mailto:hello@upfrontoperations.com" className="text-blue-500 hover:text-blue-600">support@upfrontoperations.com</a>
+          <a href="mailto:hello@upfrontoperations.com" className="text-blue-500 hover:text-blue-600">hello@upfrontoperations.com</a>
         </p>
       </div>
     </main>
