@@ -1,10 +1,8 @@
-// layout.tsx
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from 'next/font/google';
 import localFont from "next/font/local";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
-import ClientLayout from './client-layout';
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -40,12 +38,24 @@ export default function RootLayout({
       <body
         className={`${plusJakarta.variable} ${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
       >
-        <ClientLayout>
-          <main>
-            {children}
-          </main>
-          <SpeedInsights />
-        </ClientLayout>
+        <main>
+          {children}
+        </main>
+        <SpeedInsights />
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            function sendHeight() {
+              const height = document.documentElement.scrollHeight;
+              window.parent.postMessage({
+                type: 'calculator-resize',
+                height: height
+              }, '*');
+            }
+            sendHeight();
+            setTimeout(sendHeight, 1000);
+            new ResizeObserver(() => sendHeight()).observe(document.body);
+          `
+        }} />
       </body>
     </html>
   );
