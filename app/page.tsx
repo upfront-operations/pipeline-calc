@@ -1,3 +1,47 @@
+//Welcome to the Upfront Ops Pipeline Calculator! This tool is designed to help you analyze and optimize your sales pipeline.
+
+//If you're here, you're probably interested in the sources I used while making this. 
+//Note they are only estimates based on available data at the time of development. Here they are:
+
+
+/* SOURCES:
+
+- **Sales Funnel Conversion Rates: 5 Metrics to Know**  
+  URL: https://www.mosaic.tech/financial-metrics/sales-funnel-conversion-rate
+
+- **Updated 2023: Average Conversion Rate by Industry and Marketing Source**  
+  URL: https://www.ruleranalytics.com/blog/insight/conversion-rate-by-industry/
+
+- **Understanding Your Sales Funnel Conversion Rate (and How to Use It)**  
+  URL: https://www.close.com/blog/sales-funnel-conversion-rate
+
+- **7 Types of Consulting Sales Funnel That You Must Build in 2024!**  
+  URL: https://www.salesmate.io/blog/consulting-sales-funnel/
+
+- **Improving Sales Funnel Conversion**  
+  URL: https://sbrconsulting.com/improving-sales-funnel-conversion/
+
+- **Sales Funnels 101: Optimizing Conversions for Business Growth**  
+  URL: https://www.strategicadvisorboard.com/blog-posts/sales-funnels-101-optimizing-conversions-for-business-growth
+
+- **How to Conduct a Sales Funnel Analysis to Improve Conversions**  
+  URL: https://www.leadgenius.com/resources/how-to-conduct-a-sales-funnel-analysis-to-improve-conversions
+
+- **What’s a Good Funnel Conversion Rate? (& Tips for Improvement)**  
+  URL: https://databox.com/improve-your-funnel-conversion-rate
+
+- **How to Improve Your Sales Funnel Conversion Rates**  
+  URL: https://www.copper.com/resources/sales-funnel-conversion-rate
+
+- **Sales Funnel Conversion Rate: A Simple Formula**  
+  URL: https://www.kluster.com/blog/metrics-funnel-conversion-rate
+
+- **20 Real Estate Lead Conversion Statistics To Close More Leads**  
+  URL: https://www.soocial.com/real-estate-lead-conversion-statistics/
+
+- **The Basics of Sales Funnel Conversion Analysis**  
+  URL: https://www.insightsquared.com/blog/the-basics-of-sales-funnel-conversion-analysis/  */
+
 'use client';
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -8,35 +52,37 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Activity, TrendingUp, DollarSign, Mail } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 
-// Industry configurations remain the same...
 const industryConfigs = {
   coffee_shop: {
     title: "Coffee Shop Calculator",
-    leads: "Marketing Leads",
-    meetings: "Shop Visits",
-    proposals: "Purchases",
-    negotiations: "Repeat Visits",
-    closed: "Loyalty Members",
-    avgDealSize: "Average Transaction Value",
-    salesCycle: "Days to Return Visit",
+    leads: "Walk-Ins",
+    meetings: "Menu Browsers", 
+    proposals: "Register Line",
+    negotiations: "Orders Placed",
+    closed: "Completed Sales",
+    avgDealSize: "Average Order Value",
+    salesCycle: "Service Time (mins)",
     helperText: {
-      leads: "Number of potential customers identified through marketing",
-      meetings: "Number of customers visiting your shop",
-      proposals: "Number of transactions completed",
-      negotiations: "Number of customers making repeat visits",
-      closed: "Number of loyalty program enrollments",
+      leads: "Total number of people entering your shop daily",
+      meetings: "Customers who stop to look at menu/products",
+      proposals: "Customers who get in line to order",
+      negotiations: "Orders being processed/customized",
+      closed: "Successfully completed transactions",
       avgDealSize: "Average spend per transaction ($5-$15 typical)",
-      salesCycle: "Average days between customer visits",
+      salesCycle: "Average minutes from entry to transaction completion",
     },
     benchmarks: {
-      leadToMeeting: 30,
-      meetingToProposal: 70,
-      proposalToNegotiation: 60,
-      negotiationToClose: 65,
-      targetCycle: 7
+      leadToMeeting: 75, // 75% of walk-ins look at menu
+      meetingToProposal: 80, // 80% of menu browsers get in line
+      proposalToNegotiation: 95, // 95% of people in line place an order
+      negotiationToClose: 98, // 98% of orders complete successfully
+      targetCycle: 8 // target 8 minutes from door to completed order
     }
   },
+
+
   bank: {
     title: "Banking Pipeline Calculator",
     leads: "Service Inquiries",
@@ -114,8 +160,7 @@ const industryConfigs = {
       negotiationToClose: 35,
       targetCycle: 60
     }
-  }
-};
+  }}
 
 type PipelineData = {
   leads: string;
@@ -128,7 +173,35 @@ type PipelineData = {
 };
 
 const PipelineCalculator = () => {
-  const [selectedIndustry, setSelectedIndustry] = useState<string>("");
+  const searchParams = useSearchParams();
+  const industryParam = searchParams.get('industry');
+  const industryUrlMap: Record<string, string[]> = {
+    'coffee_shop': ['coffee', 'cafe', 'coffeeshop', 'coffee-shop'],
+    'bank': ['banking', 'finance', 'financial', 'bank'],
+    'real_estate': ['realestate', 'real-estate', 'property', 'realtor'],
+    'consulting': ['consultant', 'consultancy', 'advisor', 'consulting']
+  };
+  
+  const [selectedIndustry, setSelectedIndustry] = useState<string>(() => {
+    const param = searchParams.get('industry');
+    if (!param) return "";
+    
+    // Check for direct match
+    if (param in industryConfigs) {
+      return param;
+    }
+  
+    // Check mapped values
+    for (const [industry, variations] of Object.entries(industryUrlMap)) {
+      if (variations.includes(param.toLowerCase())) {
+        return industry;
+      }
+    }
+  
+    // Default return if no match found
+    return "";
+  });
+
   const [showEmailCapture, setShowEmailCapture] = useState(false);
   const [email, setEmail] = useState('');
   
@@ -200,7 +273,7 @@ const PipelineCalculator = () => {
     let velocityScore;
     const targetCycle = config.benchmarks?.targetCycle || 30;
     
-    if (numbers.salesCycle <= targetCycle * 0.5) {
+    if (numbers.salesCycle <= targetCycle * 0.5) { //upfrontops
       velocityScore = { score: 'A', text: 'Excellent', color: 'text-green-600' };
     } else if (numbers.salesCycle <= targetCycle) {
       velocityScore = { score: 'B', text: 'Good', color: 'text-blue-600' };
@@ -245,7 +318,7 @@ const PipelineCalculator = () => {
     <div className="w-full max-w-4xl mx-auto p-4">
       <Card>
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl">
+          <CardTitle className="text-2xl">{/*u p f r o n t  o p s*/}
             {selectedIndustry ? getCurrentConfig().title : "Select Your Industry"}
           </CardTitle>
         </CardHeader>
@@ -428,6 +501,20 @@ const PipelineCalculator = () => {
               )}
             </div>
           </div>
+                  <div className="text-sm text-gray-500 mb-8 p-4 bg-gray-50 rounded-lg">
+          <p className="mb-2">
+            © {new Date().getFullYear()} Upfront Operations. This calculator is provided as-is without any warranties or guarantees. 
+            While we strive for accuracy, results should be used as general guidance rather than definitive metrics.
+          </p>
+          <p className="mb-2">
+            Want to use this calculator on your own site? We're happy to share! Just reach out and include a backlink to us. 
+            We believe in helping the whole community grow. 🤝
+          </p>
+          <p>
+            <span className="text-gray-400">Unauthorized use, reproduction, or distribution is prohibited. But seriously, just ask - we're friendly! Contact us at </span>
+            <a href="mailto:hello@upfrontoperations.com" className="text-blue-500 hover:text-blue-600">hello@upfrontoperations.com</a>
+          </p>
+        </div>
         </CardContent>
       </Card>
     </div>
