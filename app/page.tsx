@@ -1,11 +1,15 @@
-import PipelineCalculator from '../components/PipelineCalculator';
 import { Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import dynamic from 'next/dynamic';
 
-function Calculator() {
-  const searchParams = useSearchParams();
-  return <PipelineCalculator initialIndustry={searchParams.get('industry')} />;
-}
+// Dynamically import the client component
+const ClientCalculator = dynamic(() => import('@/components/ClientCalculator'), {
+  loading: () => (
+    <div className="min-h-[400px] flex items-center justify-center">
+      <div className="text-lg text-gray-500">Loading calculator...</div>
+    </div>
+  ),
+  ssr: false
+});
 
 export default function Home() {
   return (
@@ -15,7 +19,9 @@ export default function Home() {
           <div className="text-lg text-gray-500">Loading calculator...</div>
         </div>
       }>
-        <Calculator />
+        <div className="max-w-4xl mx-auto">
+        <ClientCalculator />
+        </div>
       </Suspense>
 
       <div className="text-sm text-gray-500 mt-8 p-4 bg-gray-50 rounded-lg max-w-4xl mx-auto">
