@@ -1,4 +1,4 @@
-import PipelineCalculator from './components/PipelineCalculator';
+import PipelineCalculator from '../components/PipelineCalculator';
 
 export default function Home() {
   return (
@@ -13,12 +13,12 @@ export default function Home() {
           While we strive for accuracy, results should be used as general guidance rather than definitive metrics.
         </p>
         <p className="mb-2">
-          Want to use this calculator on your own site? We&apos;re happy to share! Just reach out and include a backlink to us. 
-          We believe in helping the whole community grow. 🤝
+          Want to use this calculator on your own site? We&apos;re happy to share our public repo on github! Just reach out and include a backlink to us. 
+          We believe in helping the whole community grow. 🤝  <a href="https://github.com/upfront-operations/pipeline-calc" className="text-blue-500 hover:text-blue-600">Check out our public repo on GitHub here</a>.
         </p>
         <p>
           <span className="text-gray-400">Unauthorized use, reproduction, or distribution is prohibited. But seriously, just ask - we&apos;re friendly! Contact us at </span>
-          <a href="mailto:hello@upfrontoperations.com" className="text-blue-500 hover:text-blue-600">hello@upfrontoperations.com</a>
+          <a href="mailto:hello@upfrontoperations.com" className="text-blue-500 hover:text-blue-600">support@upfrontoperations.com</a>
         </p>
       </div>
     </main>
