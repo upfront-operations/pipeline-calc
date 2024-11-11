@@ -11,99 +11,108 @@ import { Activity, TrendingUp, DollarSign, Mail } from 'lucide-react';
 
 // Industry configurations remain the same...
 const industryConfigs = {
-  default: {
-    title: "Select Your Industry",
-    leads: "Leads",
-    meetings: "Meetings",
-    proposals: "Proposals",
-    negotiations: "Negotiations",
-    closed: "Closed",
-    avgDealSize: "Average Deal Size",
-    salesCycle: "Sales Cycle",
-    helperText: {
-      leads: "Total number of new leads entering your pipeline each month",
-      meetings: "Number of discovery or sales meetings conducted monthly",
-      proposals: "Number of proposals or quotes sent to prospects monthly",
-      negotiations: "Number of deals in active negotiation/contract review",
-      closed: "Number of deals successfully closed per month",
-      avgDealSize: "Average revenue per closed deal",
-      salesCycle: "Average days from first contact to deal closure",
-    }
-  },
   coffee_shop: {
     title: "Coffee Shop Calculator",
-    leads: "Walk-ins",
-    meetings: "Menu Browsers",
-    proposals: "Orders Placed",
-    negotiations: "Customizations",
-    closed: "Completed Sales",
-    avgDealSize: "Average Order Value",
-    salesCycle: "Service Time (mins)",
+    leads: "Marketing Leads",
+    meetings: "Shop Visits",
+    proposals: "Purchases",
+    negotiations: "Repeat Visits",
+    closed: "Loyalty Members",
+    avgDealSize: "Average Transaction Value",
+    salesCycle: "Days to Return Visit",
     helperText: {
-      leads: "Number of customers walking into your shop daily",
-      meetings: "Customers who stop to look at menu/products",
-      proposals: "Number of orders placed",
-      negotiations: "Orders requiring customization or special requests",
-      closed: "Successfully completed transactions",
-      avgDealSize: "Average spend per customer",
-      salesCycle: "Average time from entry to purchase completion",
+      leads: "Number of potential customers identified through marketing",
+      meetings: "Number of customers visiting your shop",
+      proposals: "Number of transactions completed",
+      negotiations: "Number of customers making repeat visits",
+      closed: "Number of loyalty program enrollments",
+      avgDealSize: "Average spend per transaction ($5-$15 typical)",
+      salesCycle: "Average days between customer visits",
+    },
+    benchmarks: {
+      leadToMeeting: 30,
+      meetingToProposal: 70,
+      proposalToNegotiation: 60,
+      negotiationToClose: 65,
+      targetCycle: 7
     }
   },
   bank: {
     title: "Banking Pipeline Calculator",
-    leads: "Inquiries",
+    leads: "Service Inquiries",
     meetings: "Consultations",
     proposals: "Applications",
-    negotiations: "Underwriting",
+    negotiations: "Under Review",
     closed: "Accounts Opened",
-    avgDealSize: "Average Account Value",
+    avgDealSize: "Average Account/Loan Value",
     salesCycle: "Processing Days",
     helperText: {
-      leads: "Total number of product inquiries received monthly",
+      leads: "Number of individuals expressing interest in services",
       meetings: "Number of financial consultations conducted",
-      proposals: "Applications submitted for processing",
-      negotiations: "Applications in underwriting/review",
+      proposals: "Number of account/loan applications submitted",
+      negotiations: "Applications under review/processing",
       closed: "Successfully opened accounts/approved loans",
-      avgDealSize: "Average initial deposit or loan value",
-      salesCycle: "Average days from inquiry to account opening",
+      avgDealSize: "Average initial deposit or loan value ($5k-$50k typical)",
+      salesCycle: "Days from inquiry to account opening",
+    },
+    benchmarks: {
+      leadToMeeting: 25,
+      meetingToProposal: 55,
+      proposalToNegotiation: 45,
+      negotiationToClose: 45,
+      targetCycle: 14
     }
   },
   real_estate: {
     title: "Real Estate Pipeline Calculator",
     leads: "Property Inquiries",
-    meetings: "Viewings",
+    meetings: "Property Showings",
     proposals: "Offers Made",
     negotiations: "Price Negotiations",
     closed: "Properties Sold",
-    avgDealSize: "Average Property Value",
+    avgDealSize: "Property Value",
     salesCycle: "Days to Close",
     helperText: {
-      leads: "Monthly property inquiries received",
-      meetings: "Number of property viewings conducted",
-      proposals: "Offers submitted to sellers",
+      leads: "Number of property inquiries received",
+      meetings: "Number of property showings conducted",
+      proposals: "Number of offers submitted",
       negotiations: "Active price/term negotiations",
       closed: "Successfully closed property deals",
-      avgDealSize: "Average property sale price",
-      salesCycle: "Average days from listing to closing",
+      avgDealSize: "Average property sale price ($200k-$500k typical)",
+      salesCycle: "Days from listing to closing",
+    },
+    benchmarks: {
+      leadToMeeting: 7.5,
+      meetingToProposal: 22.5,
+      proposalToNegotiation: 45,
+      negotiationToClose: 45,
+      targetCycle: 120
     }
   },
   consulting: {
     title: "Consulting Pipeline Calculator",
     leads: "Prospects",
     meetings: "Discovery Calls",
-    proposals: "Statements of Work",
+    proposals: "Service Proposals",
     negotiations: "Contract Reviews",
     closed: "Projects Won",
-    avgDealSize: "Average Project Value",
+    avgDealSize: "Project Value",
     salesCycle: "Days to Sign",
     helperText: {
-      leads: "Monthly new prospect inquiries",
-      meetings: "Initial discovery calls conducted",
-      proposals: "Statements of work submitted",
-      negotiations: "Contracts in review phase",
+      leads: "Number of potential clients identified",
+      meetings: "Number of initial consultations conducted",
+      proposals: "Number of proposals submitted",
+      negotiations: "Contracts under review",
       closed: "Successfully signed projects",
-      avgDealSize: "Average project contract value",
-      salesCycle: "Average days from inquiry to contract signing",
+      avgDealSize: "Average project value ($10k-$50k typical)",
+      salesCycle: "Days from first contact to contract signing",
+    },
+    benchmarks: {
+      leadToMeeting: 12.5,
+      meetingToProposal: 55,
+      proposalToNegotiation: 35,
+      negotiationToClose: 35,
+      targetCycle: 60
     }
   }
 };
@@ -162,7 +171,7 @@ const PipelineCalculator = () => {
   const [results, setResults] = useState<Results | null>(null);
 
   const getCurrentConfig = () => {
-    return industryConfigs[selectedIndustry as keyof typeof industryConfigs] || industryConfigs.default;
+    return industryConfigs[selectedIndustry as keyof typeof industryConfigs];
   };
 
   const calculateMetrics = () => {
@@ -187,11 +196,19 @@ const PipelineCalculator = () => {
     const potentialRevenue = numbers.closed * numbers.avgDealSize;
     const improvedRevenue = potentialRevenue * 1.25;
 
+    const config = getCurrentConfig();
     let velocityScore;
-    if (numbers.salesCycle <= 30) velocityScore = { score: 'A', text: 'Excellent', color: 'text-green-600' };
-    else if (numbers.salesCycle <= 60) velocityScore = { score: 'B', text: 'Good', color: 'text-blue-600' };
-    else if (numbers.salesCycle <= 90) velocityScore = { score: 'C', text: 'Fair', color: 'text-yellow-600' };
-    else velocityScore = { score: 'D', text: 'Needs Improvement', color: 'text-red-600' };
+    const targetCycle = config.benchmarks?.targetCycle || 30;
+    
+    if (numbers.salesCycle <= targetCycle * 0.5) {
+      velocityScore = { score: 'A', text: 'Excellent', color: 'text-green-600' };
+    } else if (numbers.salesCycle <= targetCycle) {
+      velocityScore = { score: 'B', text: 'Good', color: 'text-blue-600' };
+    } else if (numbers.salesCycle <= targetCycle * 1.5) {
+      velocityScore = { score: 'C', text: 'Fair', color: 'text-yellow-600' };
+    } else {
+      velocityScore = { score: 'D', text: 'Needs Improvement', color: 'text-red-600' };
+    }
 
     return {
       conversionRates,
@@ -343,25 +360,29 @@ const PipelineCalculator = () => {
                     </ResponsiveContainer>
                   </div>
 
-                  <Alert>
-                    <AlertTitle>Key Findings</AlertTitle>
-                    <AlertDescription>
-                      <ul className="list-disc pl-4 mt-2 space-y-2">
-                        {parseFloat(results.conversionRates.leadToMeeting) < 40 && (
-                          <li>Your {getCurrentConfig().leads.toLowerCase()}-to-{getCurrentConfig().meetings.toLowerCase()} conversion rate of {results.conversionRates.leadToMeeting}% is below the industry benchmark of 40%.</li>
+                    <Alert>
+                      <AlertTitle>Key Findings</AlertTitle>
+                      <AlertDescription>
+                        {!results ? (
+                          <p className="text-gray-500 italic">Analysis will appear here after data input</p>
+                        ) : (
+                          <ul className="list-disc pl-4 mt-2 space-y-2">
+                            {parseFloat(results.conversionRates.leadToMeeting) < getCurrentConfig().benchmarks.leadToMeeting && (
+                              <li>Your {getCurrentConfig().leads.toLowerCase()}-to-{getCurrentConfig().meetings.toLowerCase()} conversion rate of {results.conversionRates.leadToMeeting}% is below the industry benchmark of {getCurrentConfig().benchmarks.leadToMeeting}%.</li>
+                            )}
+                            {parseFloat(results.conversionRates.meetingToProposal) < getCurrentConfig().benchmarks.meetingToProposal && (
+                              <li>Your {getCurrentConfig().meetings.toLowerCase()}-to-{getCurrentConfig().proposals.toLowerCase()} rate of {results.conversionRates.meetingToProposal}% is below the target of {getCurrentConfig().benchmarks.meetingToProposal}%.</li>
+                            )}
+                            {parseFloat(results.conversionRates.proposalToNegotiation) < getCurrentConfig().benchmarks.proposalToNegotiation && (
+                              <li>Your {getCurrentConfig().proposals.toLowerCase()}-to-{getCurrentConfig().negotiations.toLowerCase()} conversion of {results.conversionRates.proposalToNegotiation}% is below average of {getCurrentConfig().benchmarks.proposalToNegotiation}%.</li>
+                            )}
+                            {results.numbers.salesCycle > getCurrentConfig().benchmarks.targetCycle && (
+                              <li>Your {results.numbers.salesCycle}-day cycle length is above the industry standard of {getCurrentConfig().benchmarks.targetCycle} days.</li>
+                            )}
+                          </ul>
                         )}
-                        {parseFloat(results.conversionRates.meetingToProposal) < 50 && (
-                          <li>Your {getCurrentConfig().meetings.toLowerCase()}-to-{getCurrentConfig().proposals.toLowerCase()} rate of {results.conversionRates.meetingToProposal}% suggests room for improvement.</li>
-                        )}
-                        {parseFloat(results.conversionRates.proposalToNegotiation) < 60 && (
-                          <li>Your {getCurrentConfig().proposals.toLowerCase()}-to-{getCurrentConfig().negotiations.toLowerCase()} conversion of {results.conversionRates.proposalToNegotiation}% indicates potential for better processes.</li>
-                        )}
-                        {results.numbers.salesCycle > 60 && (
-                          <li>Your {results.numbers.salesCycle}-day cycle length is above optimal range. Consider streamlining your process.</li>
-                        )}
-                      </ul>
-                    </AlertDescription>
-                  </Alert>
+                      </AlertDescription>
+                    </Alert>
 
                   <Alert className="bg-blue-50">
                     <AlertTitle className="flex items-center gap-2">
