@@ -335,12 +335,8 @@ import type { FC } from 'react';  // Add this import
     avgDealSize: string;
     salesCycle: string;
   };
-
-  interface PipelineCalculatorProps {
-    initialIndustry: string | null;
-  }
   
-  const PipelineCalculator: FC<PipelineCalculatorProps> = ({ initialIndustry }) => {
+  const PipelineCalculator: FC = () => {
     const [mounted, setMounted] = useState(false);
     // Add useEffect to handle client-side mounting
     const searchParams = useSearchParams();
