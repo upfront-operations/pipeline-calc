@@ -45,7 +45,10 @@ export default function RootLayout({
 
   return (
     <html>
-      <body>{children}<SpeedInsights /></body>
+      <body>
+        {children}
+        <SpeedInsights />
+        </body>
     </html>
   );
 }
