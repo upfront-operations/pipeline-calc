@@ -32,11 +32,11 @@ export default function Home() {
         <p className="mb-2">
           Want to use this calculator on your own site? We&apos;re happy to share! Just reach out and include a backlink to us. 
           We believe in helping the whole community grow. 🤝
-          You can find the list of sources we used here in our repo. Feel free to explore the rest of the code as well.
+          You can find the list of sources we used <a href="https://github.com/upfront-operations/pipeline-calc/" className="text-blue-500 hover:text-blue-600">here in our GitHub repo</a>. Feel free to explore the rest of the code as well.
         </p>
         <p>
           <span className="text-gray-400">Unauthorized use, reproduction, or distribution is prohibited. But seriously, just ask - we&apos;re friendly! Contact us at </span>
-          <a href="mailto:support@upfrontoperations.com" className="text-blue-500 hover:text-blue-600">hello@upfrontoperations.com</a>
+          <a href="mailto:support@upfrontoperations.com" className="text-blue-500 hover:text-blue-600">support@upfrontoperations.com</a>
         </p>
       </div>
     </main>
