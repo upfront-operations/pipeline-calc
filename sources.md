@@ -1,10 +1,10 @@
-//Welcome to the Upfront Ops Pipeline Calculator! This tool is designed to help you analyze and optimize your sales pipeline.
+###Welcome to the Upfront Ops Pipeline Calculator! This tool is designed to help you analyze and optimize your sales pipeline.
 
-//If you're here, you're probably interested in the sources I used while making this. 
-//Note they are only estimates based on available data at the time of development. Here they are:
+If you're here, you're probably interested in the sources I used while making this. 
+Note they are only estimates based on available data at the time of development. Here they are:
 
 
-/* SOURCES:
+* SOURCES:
 
 - **Sales Funnel Conversion Rates: 5 Metrics to Know**  
   URL: https://www.mosaic.tech/financial-metrics/sales-funnel-conversion-rate
