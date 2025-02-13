@@ -7,7 +7,16 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const ROICalculator = () => {
-  const [inputs, setInputs] = useState({
+  type RevenueImportance = 'low' | 'medium' | 'high';
+  type CurrentImpact = 'low' | 'medium' | 'high';
+
+  const [inputs, setInputs] = useState<{
+    websiteRedesignCost: number;
+    currentPlacements: number;
+    averageValue: number;
+    revenueImportance: RevenueImportance;
+    currentImpact: CurrentImpact;
+  }>({
     websiteRedesignCost: 25000,
     currentPlacements: 10,
     averageValue: 20000,
@@ -73,10 +82,10 @@ const ROICalculator = () => {
     // Calculate ROI and break-even
     const timeToValue = monthlyRevenue > 0 
       ? (inputs.websiteRedesignCost / monthlyRevenue).toFixed(1)
-      : 24;
+      : '24';
 
     const ROIFactor = (monthlyRevenue * 24 - inputs.websiteRedesignCost) / inputs.websiteRedesignCost * 100;
-    const monthlyROI = (ROIFactor / 24).toFixed(1);
+    const monthlyROI = parseFloat((ROIFactor / 24).toFixed(1));
 
     // Only calculate daily opportunity cost if break-even is realistic
     let dailyOpportunityCost = 0;
@@ -88,10 +97,10 @@ const ROICalculator = () => {
     }
 
     setResults({
-      additionalRevenue: monthlyRevenue.toFixed(0),
-      timeToValue,
+      additionalRevenue: parseFloat(monthlyRevenue.toFixed(0)),
+      timeToValue: parseFloat(timeToValue as string),
       monthlyROI,
-      dailyOpportunityCost: dailyOpportunityCost.toFixed(0)
+      dailyOpportunityCost: parseFloat(dailyOpportunityCost.toFixed(0))
     });
   };
 
@@ -99,7 +108,7 @@ const ROICalculator = () => {
     calculateResults();
   }, [inputs]);
 
-  const formatCurrency = (value) => {
+  const formatCurrency = (value: number | bigint) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
@@ -107,7 +116,7 @@ const ROICalculator = () => {
     }).format(value);
   };
 
-  const handleSliderChange = (name, value) => {
+  const handleSliderChange = (name: string, value: any[]) => {
     setInputs(prev => ({
       ...prev,
       [name]: value[0]
@@ -127,7 +136,7 @@ const ROICalculator = () => {
               defaultValue="medium"
               className="w-full"
               value={inputs.revenueImportance}
-              onValueChange={(value) => setInputs(prev => ({ ...prev, revenueImportance: value }))}
+              onValueChange={(value) => setInputs(prev => ({ ...prev, revenueImportance: value as RevenueImportance }))}
             >
               <TabsList className="w-full grid grid-cols-3">
                 <TabsTrigger value="low">
@@ -149,7 +158,7 @@ const ROICalculator = () => {
               defaultValue="medium"
               className="w-full"
               value={inputs.currentImpact}
-              onValueChange={(value) => setInputs(prev => ({ ...prev, currentImpact: value }))}
+              onValueChange={(value) => setInputs(prev => ({ ...prev, currentImpact: value as CurrentImpact }))}
             >
               <TabsList className="w-full grid grid-cols-3">
                 <TabsTrigger value="low">
