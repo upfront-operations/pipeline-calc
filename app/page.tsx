@@ -190,7 +190,7 @@ const ROICalculator = () => {
           </div>
 
           <div>
-            <Label className="text-lg">What's your average placement value?</Label>
+            <Label className="text-lg">What&apos;s your average placement value?</Label>
             <div className="mt-2">
               <Slider
                 value={[inputs.averageValue]}
