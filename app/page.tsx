@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -126,6 +126,7 @@ const ROICalculator = () => {
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
+        
       </CardHeader>
       <CardContent className="space-y-8">
         <div className="space-y-6">
