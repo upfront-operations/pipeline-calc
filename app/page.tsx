@@ -108,7 +108,7 @@ const ROICalculator = () => {
     calculateResults();
   }, [inputs]);
 
-  const formatCurrency = (value: number | bigint) => {
+  const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
@@ -116,7 +116,7 @@ const ROICalculator = () => {
     }).format(value);
   };
 
-  const handleSliderChange = (name: string, value: any[]) => {
+  const handleSliderChange = (name: string, value: number[]) => {
     setInputs(prev => ({
       ...prev,
       [name]: value[0]
