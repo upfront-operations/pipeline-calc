@@ -126,7 +126,6 @@ const ROICalculator = () => {
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold text-center">Website ROI Calculator</CardTitle>
       </CardHeader>
       <CardContent className="space-y-8">
         <div className="space-y-6">
