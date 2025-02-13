@@ -40,7 +40,7 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 
 
-## If you're reading this, you're probably interested in the sources we used used while making this. 
+## If you're reading this, you're probably interested in the sources we used while making this. 
 #### Note they are only estimates based on available data at the time of development.
 
 
