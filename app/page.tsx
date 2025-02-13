@@ -139,13 +139,13 @@ const ROICalculator = () => {
             >
               <TabsList className="w-full grid grid-cols-3">
                 <TabsTrigger value="low">
-                  Not Very Important
+                  Not Very
                 </TabsTrigger>
                 <TabsTrigger value="medium">
-                  Somewhat Important
+                  Somewhat
                 </TabsTrigger>
                 <TabsTrigger value="high">
-                  Very Important
+                  Very
                 </TabsTrigger>
               </TabsList>
             </Tabs>
